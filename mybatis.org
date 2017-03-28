@@ -48,7 +48,7 @@
 
 比如 hibernate。\\
 它的思路是，在实体对象中设置好映射和关联后，我们只需要对对象进行各种操作（增删改查等）。
-框架会帮助我们把这些操作翻译成对数据库的操作。\\
+框架会帮助我们把这些操作翻译成对数据库的操作。 \\
 上面的功能，用 hibernate 实现，大致的代码为:
 #+BEGIN_SRC java
   // 1. 读取配置文件，建立 SessionFactory
@@ -155,7 +155,7 @@ hibernate 非常强大，在它的基础上，形成了 JavaEE 的 ORM 标准 JP
 
     <!-- 指定各个 mapper 文件 -->
     <mappers>
-      <mapper resource="org/mybatis/example/PersonMapper.xml"/>
+      <mapper resource="t/mapper/PersonMapper.xml"/>
     </mappers>
     
   </configuration>
@@ -193,7 +193,7 @@ hibernate 非常强大，在它的基础上，形成了 JavaEE 的 ORM 标准 JP
   // 2 ... 获取 session
   SqlSession session = sqlSessionFactory.openSession();
 
-  // 3 ... 进行查询，我们配置的 sql 语句的名字是 t.dao.PersonDao.selectFromPerson，所以，查询如下
+  // 3 ... 进行查询，配置文件里，查询的 sql 语句我们给的名字是 t.dao.PersonDao.selectFromPerson，所以，查询如下
   Person person = (Person) session.selectOne("t.dao.PersonDao.selectFromPerson", 1);
 
   // 4 ... 进行删除，相应 sql 语句为 t.dao.PersonDao.deleteFromPerson
@@ -205,15 +205,15 @@ hibernate 非常强大，在它的基础上，形成了 JavaEE 的 ORM 标准 JP
 
 
 
-这样就 OK 了，这基本是 Mybatis 的全部了（虽然还有很多细节没说）。
+这样就 OK 了，这基本是 Mybatis 的全部了（虽然还有很多细节没说）。\\
 当然，你有没有觉得，下面这样的语句写多了也会抓狂。
 : Person person = (Person) session.selectOne("t.dao.PersonDao.selectFromPerson", 1);
-因为，sql 的名字太长了，容易写错，并且字符串 IDE 也不好给出相应提醒，而且还需要自己动手转型。麻烦。
+因为，sql 的名字写短了容易起冲突，写长了不好急，容易写错，并且因为是字符串 IDE 也不好给出相应提醒。另外，需要自己动手转型，也麻烦。
 
 怎么办？再封装一丢丢就好了。
 
-既然，我们给这条 sql 起的名字是 t.dao.PersonDao.selectFromPerson，那么，我们就按照这个写法，创建相应的接口呗。
-也就是，复辟我们的 dao 层：
+既然我们给这条 sql 起的名字是 t.dao.PersonDao.selectFromPerson，那么，我们就按照这个写法，创建相应的接口呗。
+也就是：复辟我们的 dao 层！
 #+BEGIN_SRC java
   package t.dao;
 
@@ -232,13 +232,13 @@ hibernate 非常强大，在它的基础上，形成了 JavaEE 的 ORM 标准 JP
   // 2 ... 获取 session
   SqlSession session = sqlSessionFactory.openSession();
 
-  // 3 ... mybatis 会为 PersonDao 接口生成一个代理对象（代理模式，还记得吗）。
+  // 3 ... mybatis 根据 PersonDao 接口生成相应的代理对象（代理模式，还记得吗）。
   PersonDao personDao = session.getMapper(PersonDao.class);
 
-  // 4 ... 我们调用这个代理对象的方法
+  // 4 ... 我们调用这个代理对象的相应方法
   // mybatis 会通过反射的方式，查询到这个 PersonDao 的全类名为 t.dao.PersonDao，我们调用的方法名为 selectFromPerson，所以她也就明白了：
   //  -- 我们是想要执行 t.dao.PersonDao.selectFromPerson 这条 sql 语句
-  //  -- 返回类型是 Person
+  //  -- 返回的数据应该封装成 Person
   // 所以 mybatis 就会去找名字为 t.dao.PersonDao.selectFromPerson 的 sql 语句，查询到，封装结果到 Person 里。
   Person person = personDao.selectFromPerson(1);
 
@@ -247,6 +247,8 @@ hibernate 非常强大，在它的基础上，形成了 JavaEE 的 ORM 标准 JP
 #+END_SRC
 
 有没有发现，这样封装了一下，好像事情变得更面向对象了，操作起来更爽手了。
+
+也就这么简单。
 
 我们的 MyBatis 教程。就这样结束了。
 

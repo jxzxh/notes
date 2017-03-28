@@ -2,7 +2,7 @@
 <html>
 <head>
 <title>MyBatis 教程</title>
-<!-- 2017-03-28 周二 10:46 -->
+<!-- 2017-03-28 周二 11:00 -->
 <meta  charset="utf-8">
 <meta  name="generator" content="Org-mode">
 <meta  name="author" content="imfine">
@@ -95,7 +95,7 @@ conn.execute<span style="color: #707183;">(</span><span style="color: #8b2252;">
 <p>
 比如 hibernate。<br >
 它的思路是，在实体对象中设置好映射和关联后，我们只需要对对象进行各种操作（增删改查等）。
-框架会帮助我们把这些操作翻译成对数据库的操作。<br >
+框架会帮助我们把这些操作翻译成对数据库的操作。 <br >
 上面的功能，用 hibernate 实现，大致的代码为:
 </p>
 <div class="org-src-container">
@@ -243,7 +243,7 @@ sqlsessionfactory.getSession<span style="color: #707183;">()</span>.exec<span st
 
   <span style="color: #b22222;">&lt;!--</span><span style="color: #b22222;"> &#25351;&#23450;&#21508;&#20010; mapper &#25991;&#20214; </span><span style="color: #b22222;">--&gt;</span>
   &lt;<span style="color: #0000ff;">mappers</span>&gt;
-    &lt;<span style="color: #0000ff;">mapper</span> <span style="color: #a0522d;">resource</span>=<span style="color: #8b2252;">"</span><span style="color: #8b2252;">org/mybatis/example/PersonMapper.xml</span><span style="color: #8b2252;">"</span>/&gt;
+    &lt;<span style="color: #0000ff;">mapper</span> <span style="color: #a0522d;">resource</span>=<span style="color: #8b2252;">"</span><span style="color: #8b2252;">t/mapper/PersonMapper.xml</span><span style="color: #8b2252;">"</span>/&gt;
   &lt;/<span style="color: #0000ff;">mappers</span>&gt;
 
 &lt;/<span style="color: #0000ff;">configuration</span>&gt;
@@ -289,7 +289,7 @@ sqlsessionfactory.getSession<span style="color: #707183;">()</span>.exec<span st
 <span style="color: #b22222;">// </span><span style="color: #b22222;">2 ... &#33719;&#21462; session</span>
 <span style="color: #228b22;">SqlSession</span> <span style="color: #a0522d;">session</span> = sqlSessionFactory.openSession<span style="color: #707183;">()</span>;
 
-<span style="color: #b22222;">// </span><span style="color: #b22222;">3 ... &#36827;&#34892;&#26597;&#35810;&#65292;&#25105;&#20204;&#37197;&#32622;&#30340; sql &#35821;&#21477;&#30340;&#21517;&#23383;&#26159; t.dao.PersonDao.selectFromPerson&#65292;&#25152;&#20197;&#65292;&#26597;&#35810;&#22914;&#19979;</span>
+<span style="color: #b22222;">// </span><span style="color: #b22222;">3 ... &#36827;&#34892;&#26597;&#35810;&#65292;&#37197;&#32622;&#25991;&#20214;&#37324;&#65292;&#26597;&#35810;&#30340; sql &#35821;&#21477;&#25105;&#20204;&#32473;&#30340;&#21517;&#23383;&#26159; t.dao.PersonDao.selectFromPerson&#65292;&#25152;&#20197;&#65292;&#26597;&#35810;&#22914;&#19979;</span>
 <span style="color: #228b22;">Person</span> <span style="color: #a0522d;">person</span> = <span style="color: #707183;">(</span><span style="color: #228b22;">Person</span><span style="color: #707183;">)</span> session.selectOne<span style="color: #707183;">(</span><span style="color: #8b2252;">"t.dao.PersonDao.selectFromPerson"</span>, 1<span style="color: #707183;">)</span>;
 
 <span style="color: #b22222;">// </span><span style="color: #b22222;">4 ... &#36827;&#34892;&#21024;&#38500;&#65292;&#30456;&#24212; sql &#35821;&#21477;&#20026; t.dao.PersonDao.deleteFromPerson</span>
@@ -303,14 +303,14 @@ session.close<span style="color: #707183;">()</span>;
 
 
 <p>
-这样就 OK 了，这基本是 Mybatis 的全部了（虽然还有很多细节没说）。
+这样就 OK 了，这基本是 Mybatis 的全部了（虽然还有很多细节没说）。<br >
 当然，你有没有觉得，下面这样的语句写多了也会抓狂。
 </p>
 <pre class="example">
 Person person = (Person) session.selectOne("t.dao.PersonDao.selectFromPerson", 1);
 </pre>
 <p>
-因为，sql 的名字太长了，容易写错，并且字符串 IDE 也不好给出相应提醒，而且还需要自己动手转型。麻烦。
+因为，sql 的名字写短了容易起冲突，写长了不好急，容易写错，并且因为是字符串 IDE 也不好给出相应提醒。另外，需要自己动手转型，也麻烦。
 </p>
 
 <p>
@@ -318,8 +318,8 @@ Person person = (Person) session.selectOne("t.dao.PersonDao.selectFromPerson", 1
 </p>
 
 <p>
-既然，我们给这条 sql 起的名字是 t.dao.PersonDao.selectFromPerson，那么，我们就按照这个写法，创建相应的接口呗。
-也就是，复辟我们的 dao 层：
+既然我们给这条 sql 起的名字是 t.dao.PersonDao.selectFromPerson，那么，我们就按照这个写法，创建相应的接口呗。
+也就是：复辟我们的 dao 层！
 </p>
 <div class="org-src-container">
 
@@ -344,13 +344,13 @@ Person person = (Person) session.selectOne("t.dao.PersonDao.selectFromPerson", 1
 <span style="color: #b22222;">// </span><span style="color: #b22222;">2 ... &#33719;&#21462; session</span>
 <span style="color: #228b22;">SqlSession</span> <span style="color: #a0522d;">session</span> = sqlSessionFactory.openSession<span style="color: #707183;">()</span>;
 
-<span style="color: #b22222;">// </span><span style="color: #b22222;">3 ... mybatis &#20250;&#20026; PersonDao &#25509;&#21475;&#29983;&#25104;&#19968;&#20010;&#20195;&#29702;&#23545;&#35937;&#65288;&#20195;&#29702;&#27169;&#24335;&#65292;&#36824;&#35760;&#24471;&#21527;&#65289;&#12290;</span>
+<span style="color: #b22222;">// </span><span style="color: #b22222;">3 ... mybatis &#26681;&#25454; PersonDao &#25509;&#21475;&#29983;&#25104;&#30456;&#24212;&#30340;&#20195;&#29702;&#23545;&#35937;&#65288;&#20195;&#29702;&#27169;&#24335;&#65292;&#36824;&#35760;&#24471;&#21527;&#65289;&#12290;</span>
 <span style="color: #228b22;">PersonDao</span> <span style="color: #a0522d;">personDao</span> = session.getMapper<span style="color: #707183;">(</span>PersonDao.<span style="color: #a020f0;">class</span><span style="color: #707183;">)</span>;
 
-<span style="color: #b22222;">// </span><span style="color: #b22222;">4 ... &#25105;&#20204;&#35843;&#29992;&#36825;&#20010;&#20195;&#29702;&#23545;&#35937;&#30340;&#26041;&#27861;</span>
+<span style="color: #b22222;">// </span><span style="color: #b22222;">4 ... &#25105;&#20204;&#35843;&#29992;&#36825;&#20010;&#20195;&#29702;&#23545;&#35937;&#30340;&#30456;&#24212;&#26041;&#27861;</span>
 <span style="color: #b22222;">// </span><span style="color: #b22222;">mybatis &#20250;&#36890;&#36807;&#21453;&#23556;&#30340;&#26041;&#24335;&#65292;&#26597;&#35810;&#21040;&#36825;&#20010; PersonDao &#30340;&#20840;&#31867;&#21517;&#20026; t.dao.PersonDao&#65292;&#25105;&#20204;&#35843;&#29992;&#30340;&#26041;&#27861;&#21517;&#20026; selectFromPerson&#65292;&#25152;&#20197;&#22905;&#20063;&#23601;&#26126;&#30333;&#20102;&#65306;</span>
 <span style="color: #b22222;">//  </span><span style="color: #b22222;">-- &#25105;&#20204;&#26159;&#24819;&#35201;&#25191;&#34892; t.dao.PersonDao.selectFromPerson &#36825;&#26465; sql &#35821;&#21477;</span>
-<span style="color: #b22222;">//  </span><span style="color: #b22222;">-- &#36820;&#22238;&#31867;&#22411;&#26159; Person</span>
+<span style="color: #b22222;">//  </span><span style="color: #b22222;">-- &#36820;&#22238;&#30340;&#25968;&#25454;&#24212;&#35813;&#23553;&#35013;&#25104; Person</span>
 <span style="color: #b22222;">// </span><span style="color: #b22222;">&#25152;&#20197; mybatis &#23601;&#20250;&#21435;&#25214;&#21517;&#23383;&#20026; t.dao.PersonDao.selectFromPerson &#30340; sql &#35821;&#21477;&#65292;&#26597;&#35810;&#21040;&#65292;&#23553;&#35013;&#32467;&#26524;&#21040; Person &#37324;&#12290;</span>
 <span style="color: #228b22;">Person</span> <span style="color: #a0522d;">person</span> = personDao.selectFromPerson<span style="color: #707183;">(</span>1<span style="color: #707183;">)</span>;
 
@@ -364,6 +364,10 @@ session.close<span style="color: #707183;">()</span>;
 </p>
 
 <p>
+也就这么简单。
+</p>
+
+<p>
 我们的 MyBatis 教程。就这样结束了。
 </p>
 </div>
@@ -371,7 +375,7 @@ session.close<span style="color: #707183;">()</span>;
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: imfine</p>
-<p class="date">Created: 2017-03-28 周二 10:46</p>
+<p class="date">Created: 2017-03-28 周二 11:00</p>
 <p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 25.1.1 (<a href="http://orgmode.org">Org</a> mode 8.2.10)</p>
 <p class="validation">Go ahead, never stop.</p>
 </div>
